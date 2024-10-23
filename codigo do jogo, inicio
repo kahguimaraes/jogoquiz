@@ -1,0 +1,125 @@
+import pygame
+import sys
+import random
+
+# Inicialização do Pygame
+pygame.init()
+
+# Dimensões da tela
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Quiz de Literatura")
+
+# Cores
+BLUE = (0, 0, 255)
+LIGHT_PURPLE = (200, 150, 255)
+WHITE = (255, 255, 255)
+
+# Fonte
+font = pygame.font.Font(None, 36)
+
+# Perguntas e Respostas
+questions = [
+    ("Quem escreveu 'Dom Casmurro'?", ["Machado de Assis", "José de Alencar", "Jorge Amado"], "Machado de Assis"),
+    ("Qual é o autor de 'O Pequeno Príncipe'?", ["Antoine de Saint-Exupéry", "Jules Verne", "Victor Hugo"], "Antoine de Saint-Exupéry"),
+    ("Em que ano foi publicada 'A Moreninha'?", ["1844", "1875", "1900"], "1844"),
+    ("Quem é o autor de '1984'?", ["George Orwell", "Aldous Huxley", "Ray Bradbury"], "George Orwell"),
+    ("Qual é o nome do protagonista de 'O Alquimista'?", ["Santiago", "Paulo", "Fernando"], "Santiago"),
+    ("Quem escreveu 'Memórias Póstumas de Brás Cubas'?", ["Machado de Assis", "Graciliano Ramos", "Clarice Lispector"], "Machado de Assis"),
+    ("Qual é a obra mais famosa de Jane Austen?", ["Emma", "Orgulho e Preconceito", "Persuasão"], "Orgulho e Preconceito"),
+    ("Quem é o autor de 'Cem Anos de Solidão'?", ["Gabriel García Márquez", "Mario Vargas Llosa", "Julio Cortázar"], "Gabriel García Márquez"),
+    ("Qual é a nacionalidade de Franz Kafka?", ["Alemão", "Austríaco", "Tcheco"], "Tcheco"),
+    ("Quem escreveu 'O Senhor dos Anéis'?", ["J.R.R. Tolkien", "C.S. Lewis", "George R.R. Martin"], "J.R.R. Tolkien"),
+    ("Qual é o nome da obra que introduz o personagem Sherlock Holmes?", ["Um Estudo em Vermelho", "O Cão dos Baskerville", "A Casa Vazia"], "Um Estudo em Vermelho"),
+    ("Quem escreveu 'A Divina Comédia'?", ["Dante Alighieri", "Virgílio", "Homero"], "Dante Alighieri"),
+    ("Qual é a obra mais famosa de William Shakespeare?", ["Romeu e Julieta", "Hamlet", "Macbeth"], "Hamlet"),
+    ("Quem é o autor de 'Fahrenheit 451'?", ["Ray Bradbury", "Isaac Asimov", "Arthur C. Clarke"], "Ray Bradbury"),
+    ("Qual é a obra que conta a história do Capitão Ahab?", ["Moby Dick", "O Velho e o Mar", "A Ilha do Tesouro"], "Moby Dick")
+]
+
+# Página inicial
+def start_page():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                return  # Sair da página inicial ao pressionar qualquer tecla
+
+        screen.fill(LIGHT_PURPLE)
+        
+        # Renderiza e centraliza o texto na página inicial
+        welcome_text = font.render('Bem-vindo ao Quiz de Literatura!', True, BLUE)
+        welcome_rect = welcome_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        screen.blit(welcome_text, welcome_rect)
+
+        start_text = font.render('Pressione qualquer tecla para começar', True, BLUE)
+        start_rect = start_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        screen.blit(start_text, start_rect)
+
+        pygame.display.flip()
+
+# Função principal do quiz
+def quiz():
+    score = 0
+    random.shuffle(questions)  # Embaralha as perguntas
+
+    for question in questions:
+        question_text, options, correct_answer = question
+        
+        # Embaralha as opções
+        random.shuffle(options)
+
+        screen.fill(WHITE)
+
+        # Renderiza e centraliza a pergunta na tela
+        question_surface = font.render(question_text, True, BLUE)
+        question_rect = question_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        screen.blit(question_surface, question_rect)
+
+        # Exibe as opções centralizadas abaixo da pergunta
+        for i in range(3):
+            option_surface = font.render(f"{i + 1}. {options[i]}", True, BLUE)
+            option_rect = option_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 + i * 40))
+            screen.blit(option_surface, option_rect)
+
+        pygame.display.flip()
+
+        answer = None
+        
+        while answer is None:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3]:
+                        answer = options[event.key - pygame.K_1]  # Obtém a resposta correspondente
+
+        if answer == correct_answer:
+            score += 1
+
+    # Exibe a pontuação final centralizada
+    screen.fill(LIGHT_PURPLE)
+    score_text = f'Sua pontuação final: {score}/{len(questions)}'
+    score_surface = font.render(score_text, True, BLUE)
+    score_rect = score_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(score_surface, score_rect)
+    
+    pygame.display.flip()
+    
+    # Espera por uma tecla para sair
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                return
+
+# Loop principal do jogo
+start_page()
+quiz()             
+
+pygame.quit()
